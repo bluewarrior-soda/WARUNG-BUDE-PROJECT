@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#define size 26
+#define ulli unsigned long long int
 
 struct Dish
 {
@@ -48,7 +50,19 @@ void press_ENTER ()
     getchar();
 }
 
-void push_head (char *name, int price, int quantity)
+ulli DJB2(char *str) 
+{
+    ulli hash = 5381;
+    int c;
+    while ((c = *str++))
+    {
+        hash = ((hash << 5) + hash) + c;
+    }
+
+    return hash % size;
+}
+
+void push_head (char *name, int price, int quantity) // menambah dish ke depan linked list
 {
     struct Dish *temp = (Dish*)malloc(sizeof(struct Dish));
     if (!head)
@@ -63,8 +77,9 @@ void push_head (char *name, int price, int quantity)
     }
 }
 
-void add_dish () // 1
+void add_dish () // 1 // menambah dish
 {
+    clear_screen();
     struct Dish *new_dish = (Dish*)malloc(sizeof(struct Dish));
 
     while (true)
@@ -108,7 +123,7 @@ void add_dish () // 1
     press_ENTER();
 }
 
-bool search_dish (char *target_dish)
+bool search_dish (char *target_dish) // mencari dish tertentu
 {
     curr = head;
     while (curr)
@@ -125,13 +140,14 @@ bool search_dish (char *target_dish)
 
 void remove_dish () // 2
 {
+    clear_screen();
     printf("Bude's Menu\n");
     printf("=========================================\n");
     printf("%-5s %-8s %-15s %-10s\n", "No.", "Name", "Quantity", "Price");
     // for (int i = 0; i++)
     // {
     //     printf("%-5s %-8s %-15s %-10s\n", i + 1, dish[i].name, dish[i].quantity, dish[i].price);
-    // }
+    // } // kesulitan menampilkan menu nya
     printf("=========================================\n");
 
     char target_dish[1000];
@@ -149,16 +165,19 @@ void remove_dish () // 2
     }
 }
 
-void add_customer () // 3
-{
+
+
+void add_customer () // 3 
+{ // untuk menambah customer
+    clear_screen();
     struct Dish *dish = (Dish*)malloc(sizeof(struct Dish));
+    char customer_name[1000];
     bool detected = false;
     do
     {
         printf("Insert the customer's name [Without space]: ");
         scanf("%[^\n]", dish->customer);
 
-        char customer_name[1000];
         strcpy(customer_name, dish->customer);
 
         for (int i = 0; customer_name[i] != '\0'; i++)
@@ -171,10 +190,10 @@ void add_customer () // 3
         }
     } while (detected == true);
     
-
+    ulli hash = DJB2(customer_name);
 }
 
-bool find_customer (char *target_customer)
+bool find_customer (char *target_customer) // traverse untuk mencari customer
 {
     curr = head;
     while (curr)
@@ -191,6 +210,7 @@ bool find_customer (char *target_customer)
 
 void search_customer () // 4
 {
+    clear_screen();
     char target_customer[1000];
     printf("Insert the customer’s name to be searched: ");
     scanf("%s", target_customer);
@@ -208,6 +228,7 @@ void search_customer () // 4
 
 void view_warteg () // 5
 {
+    clear_screen();
     puts("Customer's List");
     curr = head;
     while (curr)
@@ -232,7 +253,7 @@ bool search_customer (char *customer_name)
     return false;
 }
 
-int find_total_stocks ()
+int find_total_stocks () // mencari total stock yang masih tersedia
 {
     int sum = 0;
     curr = head;
@@ -245,8 +266,9 @@ int find_total_stocks ()
     return sum;
 }
 
-void order_dish () // 6
+void order_dish () // 6 // melakukan order
 {
+    clear_screen();
     struct Dish *dish = (Dish*)malloc(sizeof(struct Dish));
     printf("Insert the customer’s name: ");
     scanf("%s", dish->customer); getchar();
@@ -291,16 +313,26 @@ void order_dish () // 6
         printf("[%d] Insert the dish’s name and quantity: ", i);
         scanf("%[^\n]", dish->name);
         
-    }
+    } // bingung terima input x sekian nya. contoh : ikan x4
 }
 
 void payment () // 7
 {
-    
+    struct Dish *dish = (Dish*)malloc(sizeof(struct Dish));
+    int idx;
+    printf("Insert the customer index : ");
+    scanf("%d", &idx);
+
+    printf("%s\n", dish->customer);
+    // for (int i = 0; i < n; i++)
+    {
+        printf("[%d] %s x%d", i + 1, dish->name, )
+    }
 }
 
 void exit_warteg () // 8
 {
+    clear_screen();
     puts("Please expand your terminal to full screen!");
     press_ENTER();
 
@@ -309,7 +341,7 @@ void exit_warteg () // 8
     char s[10000];
     while (!feof(splash))
     {
-        fscanf(splash, "%[^\n]\n", s);
+        fscanf(splash, "%[^\n]%*c", s);
         printf("%s\n", s);
     }
 
@@ -341,15 +373,15 @@ void main_menu ()
         break;
         case 2: remove_dish();
         break;
-        case 3:
+        case 3: add_customer();
         break;
-        case 4:
+        case 4: search_customer();
         break;
-        case 5: 
+        case 5: view_warteg();
         break;
-        case 6: 
+        case 6: order_dish();
         break;
-        case 7:
+        case 7: payment();
         break;
         default: exit_warteg();
         break;
